@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Reporter Comparison</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <h1>Reporter Comparison</h1>
+    <canvas id="reporterChart" width="800" height="600"></canvas>
+    <script>
+        // 서버에서 전달된 JSON 데이터 파싱
+        const topReporters = JSON.parse('{{ top_reporters|escapejs }}');
+
+        // 그래프 데이터 준비
+        const labels = Object.keys(topReporters);
+        const datasets = [];
+
+        // 각 언론사별로 상위 3명 기자의 기사 수를 담은 데이터 생성
+        labels.forEach(org => {
+            const reporters = topReporters[org];
+            const reporterNames = reporters.map(rep => rep.reporter_name);
+            const articleCounts = reporters.map(rep => rep.article_count);
+
+            datasets.push({
+                label: org,
+                data: articleCounts,
+                backgroundColor: ['rgba(255, 99, 132, 0.2)', 'rgba(54, 162, 235, 0.2)', 'rgba(75, 192, 192, 0.2)'],
+                borderColor: ['rgba(255, 99, 132, 1)', 'rgba(54, 162, 235, 1)', 'rgba(75, 192, 192, 1)'],
+                borderWidth: 1,
+                stack: org
+            });
+        });
+
+        // 차트 생성
+        const ctx = document.getElementById('reporterChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: datasets[0]?.data.map((_, i) => `Top ${i + 1}`) || [],  // 상위 3명
+                datasets: datasets
+            },
+            options: {
+                scales: {
+                    x: {
+                        stacked: true,
+                        title: {
+                            display: true,
+                            text: 'Top Reporters'
+                        }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Article Count'
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: true
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(tooltipItem) {
+                                const dataset = tooltipItem.dataset;
+                                const index = tooltipItem.dataIndex;
+                                const reporterName = topReporters[labels[tooltipItem.datasetIndex]][index].reporter_name;
+                                const articleCount = topReporters[labels[tooltipItem.datasetIndex]][index].article_count;
+                                return `${reporterName}: ${articleCount} articles`;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

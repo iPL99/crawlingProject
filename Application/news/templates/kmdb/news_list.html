@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>News List</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <h1>News List</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>News Organization</th>
+                <th>Ranking Date</th>
+                <th>Ranking</th>
+                <th>Article Title</th>
+                <th>Reporter Name</th>
+                <th>Article Section</th>
+                <th>Monthly Article Count</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for news in newsList %}
+                <tr>
+                    <td>{{ news.news_organization_name }}</td>
+                    <td>{{ news.ranking_date }}</td>
+                    <td>{{ news.ranking }}</td>
+                    <td>{{ news.article_title }}</td>
+                    <td>{{ news.reporter_name }}</td>
+                    <td>{{ news.article_section }}</td>
+                    <td>{{ news.monthly_article_count }}</td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="7">No news available.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>
